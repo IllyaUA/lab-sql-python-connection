@@ -45,19 +45,18 @@ rdf2.head()
 #4 Create a Python function called compare_rentals
 
 def compare_rentals(rentals_df1, rentals_df2):
-    # Merge the two DataFrames on 'customer_id'
-    merged_df = pd.merge(rentals_df1, rentals_df2, on='customer_id', how='outer')
+    # Merge the DataFrames on 'customer_id'
+    merged_df = pd.merge(rentals_df1, rentals_df2, on='customer_id', how='inner')
 
-    # Fill missing values with 0 (customers who rented in one month but not the other)
-    merged_df = merged_df.fillna(0)
+    # Find columns with names containing "rentals_"
+    month_columns = [col for col in merged_df.columns if "rentals_" in col]
 
-    # Calculate the difference between rentals in the two months
-    merged_df['difference'] = merged_df['count_x'] - merged_df['count_y']
-
-    # Drop the 'count_x' and 'count_y' columns if not needed
-    merged_df.drop(['count_x', 'count_y'], axis=1, inplace=True)
+    # Calculate the difference for each common column
+    merged_df[f'difference_rentals'] = merged_df[month_columns[1]] - merged_df[month_columns[0]]
 
     return merged_df
 
 
-compare_rentals(rdf1,rdf2)
+# Example usage
+compared_result = compare_rentals(rdf1, rdf2)
+print(compared_result)
